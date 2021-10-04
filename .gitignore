@@ -1,2 +1,4 @@
 
 cover.out
+sslcert/tls.crt
+sslcert/tls.key
