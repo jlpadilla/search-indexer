@@ -38,6 +38,7 @@ func SyncResources(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	clusterName := params["id"]
 
+	fmt.Println("request:", r)
 	fmt.Println("params:", params)
 	// fmt.Println("cluster:", clusterName)
 	log.Printf("Received request from [%s]", clusterName)
