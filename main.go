@@ -8,19 +8,21 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jlpadilla/search-indexer/pkg/server"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	// "github.com/open-cluster-management/insights-client/pkg/config"
 )
 
 func main() {
-
-	fmt.Println("Search indexer.")
+	fmt.Println("Starting search-indexer.")
 
 	router := mux.NewRouter()
 
 	// router.HandleFunc("/liveness", handlers.LivenessProbe).Methods("GET")
 	// router.HandleFunc("/readiness", handlers.ReadinessProbe).Methods("GET")
 	router.HandleFunc("/aggregator/clusters/{id}/sync", server.SyncResources).Methods("POST")
-	// router.HandleFunc("/sync", handlers.SyncResources).Methods("POST")
+
+	// Export metrics
+	router.Path("/metrics").Handler(promhttp.Handler())
 
 	// Configure TLS
 	cfg := &tls.Config{
@@ -42,7 +44,11 @@ func main() {
 	}
 
 	fmt.Println("Listening on: ", ":3010")
-	// glog.Info("Listening on: ", ":3010") // config.Cfg.AggregatorAddress)
-	log.Fatal(srv.ListenAndServeTLS("./sslcert/tls.crt", "./sslcert/tls.key"),
+
+	// FIXME: MUST use TLS!
+	log.Fatal(srv.ListenAndServe(),
 		" Use ./setup.sh to generate certificates for local development.")
+
+	// log.Fatal(srv.ListenAndServeTLS("./sslcert/tls.crt", "./sslcert/tls.key"),
+	// 	" Use ./setup.sh to generate certificates for local development.")
 }

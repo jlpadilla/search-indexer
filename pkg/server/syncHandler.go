@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -34,20 +35,23 @@ type SyncError struct {
 }
 
 func SyncResources(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	clusterName := params["id"]
 
-	fmt.Println("request:", r)
+	fmt.Printf("request: %+v \n", r)
 	fmt.Println("params:", params)
-	// fmt.Println("cluster:", clusterName)
 	log.Printf("Received request from [%s]", clusterName)
 
-	response := &SyncResponse{Version: "TBD"}
+	response := &SyncResponse{Version: "TBD"} // TODO
 	w.WriteHeader(http.StatusOK)
 	encodeError := json.NewEncoder(w).Encode(response)
 	if encodeError != nil {
-		// glog.Error("Error responding to SyncEvent:", encodeError, response)
 		fmt.Println("Error responding to SyncEvent:", encodeError, response)
 	}
+
+	// Record metrics.
+	OpsProcessed.WithLabelValues(clusterName, r.RequestURI).Inc()
+	HttpDuration.WithLabelValues(clusterName, r.RequestURI).Observe(float64(time.Since(start).Milliseconds()))
 }
