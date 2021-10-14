@@ -2,12 +2,11 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
+	"k8s.io/klog/v2"
 )
 
 // SyncResponse - Response to a SyncEvent
@@ -40,15 +39,16 @@ func SyncResources(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	clusterName := params["id"]
 
-	fmt.Printf("request: %+v \n", r)
-	fmt.Println("params:", params)
-	log.Printf("Received request from [%s]", clusterName)
+	klog.Infof("request: %+v \n", r)
+	klog.Infof("body: %+v \n", r.Body)
+	klog.Info("params:", params)
+	klog.Infof("Received request from cluster [%s]", clusterName)
 
 	response := &SyncResponse{Version: "TBD"} // TODO
 	w.WriteHeader(http.StatusOK)
 	encodeError := json.NewEncoder(w).Encode(response)
 	if encodeError != nil {
-		fmt.Println("Error responding to SyncEvent:", encodeError, response)
+		klog.Error("Error responding to SyncEvent:", encodeError, response)
 	}
 
 	// Record metrics.

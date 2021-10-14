@@ -2,18 +2,18 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/jlpadilla/search-indexer/pkg/server"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"k8s.io/klog/v2"
 	// "github.com/open-cluster-management/insights-client/pkg/config"
 )
 
 func main() {
-	fmt.Println("Starting search-indexer.")
+	klog.InitFlags(nil)
+	klog.Info("Starting search-indexer.")
 
 	router := mux.NewRouter()
 
@@ -43,10 +43,10 @@ func main() {
 		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler)),
 	}
 
-	fmt.Println("Listening on: ", ":3010")
+	klog.Info("Listening on: ", ":3010")
 
 	// FIXME: MUST use TLS!
-	log.Fatal(srv.ListenAndServe(),
+	klog.Fatal(srv.ListenAndServe(),
 		" Use ./setup.sh to generate certificates for local development.")
 
 	// log.Fatal(srv.ListenAndServeTLS("./sslcert/tls.crt", "./sslcert/tls.key"),

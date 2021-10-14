@@ -5,12 +5,27 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 func Test_syncRequest(t *testing.T) {
 	// TODO: Send request body.
-	request := httptest.NewRequest(http.MethodPost, "/aggregator/clusters/test-cluster/sync", nil)
+	body, readErr := os.Open("./mocks/simple.json")
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	fmt.Printf("Body: %+v\n", body)
+
+	// bytes, err1 := ioutil.ReadFile("./mocks/simple.json")
+
+	// var data map[string]interface{}
+	// if err := json.Unmarshal(bytes, &data); err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Printf("Body: %+v", data)
+
+	request := httptest.NewRequest(http.MethodPost, "/aggregator/clusters/test-cluster/sync", body)
 	responseRecorder := httptest.NewRecorder()
 
 	SyncResources(responseRecorder, request)
@@ -32,3 +47,12 @@ func Test_syncRequest(t *testing.T) {
 		t.Errorf("Incorrect response body.\n expected '%+v'\n received '%+v'", expected, decodedResp)
 	}
 }
+
+// func readMock(file string) (data map[string]interface{}) {
+// 	// bytes, _ := ioutil.ReadFile("./data/sno-0.json")
+// 	bytes, _ := ioutil.ReadFile(file)
+// 	// var data map[string]interface{}
+// 	if err := json.Unmarshal(bytes, &data); err != nil {
+// 		panic(err)
+// 	}
+// }
