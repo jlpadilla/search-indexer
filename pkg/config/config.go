@@ -92,14 +92,14 @@ func getEnvAsInt(name string, defaultVal int) int {
 }
 
 // Helper to read an environment variable into a bool or return default value
-func getEnvAsBool(name string, defaultVal bool) bool {
-	valStr := getEnv(name, "")
-	if val, err := strconv.ParseBool(valStr); err == nil {
-		return val
-	}
+// func getEnvAsBool(name string, defaultVal bool) bool {
+// 	valStr := getEnv(name, "")
+// 	if val, err := strconv.ParseBool(valStr); err == nil {
+// 		return val
+// 	}
 
-	return defaultVal
-}
+// 	return defaultVal
+// }
 
 // Helper to read an environment variable into a string slice or return default value
 // func getEnvAsSlice(name string, defaultVal []string, sep string) []string {
