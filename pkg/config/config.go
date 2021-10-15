@@ -32,7 +32,7 @@ type Config struct {
 	DBUser            string
 	DBPass            string
 	HTTPTimeout       int // timeout when the http server should drop connections
-
+	Version           string
 	// EdgeBuildRateMS       int    // rate at which intercluster edges should be build
 	// KubeConfig            string // Local kubeconfig path
 	// RequestLimit          int    // Max number of concurrent requests. Used to prevent from overloading Redis.
@@ -48,6 +48,7 @@ func New() *Config {
 		DBUser:            getEnv("DB_USER", DEFAULT_DB_USER),
 		DBPass:            getEnv("DB_PASS", ""),
 		HTTPTimeout:       getEnvAsInt("HTTP_TIMEOUT", DEFAULT_HTTP_TIMEOUT),
+		Version:           AGGREGATOR_API_VERSION,
 		// EdgeBuildRateMS       int    // rate at which intercluster edges should be build
 		// KubeConfig            string // Local kubeconfig path
 		// RedisWatchRate        int    // rate at which Redis Ping hapens to check health

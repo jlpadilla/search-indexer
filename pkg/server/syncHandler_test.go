@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/jlpadilla/search-indexer/pkg/config"
 )
 
 func Test_syncRequest(t *testing.T) {
@@ -15,7 +17,7 @@ func Test_syncRequest(t *testing.T) {
 	if readErr != nil {
 		t.Fatal(readErr)
 	}
-	fmt.Printf("Body: %+v\n", body)
+	// fmt.Printf("Body: %+v\n", body)
 
 	// bytes, err1 := ioutil.ReadFile("./mocks/simple.json")
 
@@ -30,7 +32,7 @@ func Test_syncRequest(t *testing.T) {
 
 	SyncResources(responseRecorder, request)
 
-	expected := SyncResponse{Version: "TBD"}
+	expected := SyncResponse{Version: config.AGGREGATOR_API_VERSION}
 
 	if responseRecorder.Code != http.StatusOK {
 		t.Errorf("Want status '%d', got '%d'", http.StatusOK, responseRecorder.Code)

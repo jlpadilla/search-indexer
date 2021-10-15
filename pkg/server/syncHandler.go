@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jlpadilla/search-indexer/pkg/config"
 	"k8s.io/klog/v2"
 )
 
@@ -39,12 +40,12 @@ func SyncResources(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	clusterName := params["id"]
 
-	klog.Infof("request: %+v \n", r)
-	klog.Infof("body: %+v \n", r.Body)
-	klog.Info("params:", params)
-	klog.Infof("Received request from cluster [%s]", clusterName)
+	// klog.Infof("request: %+v \n", r)
+	// klog.Infof("body: %+v \n", r.Body)
+	// klog.Info("params:", params)
+	// klog.Infof("Received request from cluster [%s]", clusterName)
 
-	response := &SyncResponse{Version: "TBD"} // TODO
+	response := &SyncResponse{Version: config.AGGREGATOR_API_VERSION}
 	w.WriteHeader(http.StatusOK)
 	encodeError := json.NewEncoder(w).Encode(response)
 	if encodeError != nil {
