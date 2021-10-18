@@ -10,6 +10,39 @@ import (
 	"k8s.io/klog/v2"
 )
 
+// Resource - Describes a resource (node)
+type Resource struct {
+	Kind           string `json:"kind,omitempty"`
+	UID            string `json:"uid,omitempty"`
+	ResourceString string `json:"resourceString,omitempty"`
+	Properties     map[string]interface{}
+}
+
+// Describes a relationship between resources
+type Edge struct {
+	SourceUID, DestUID   string
+	EdgeType             string
+	SourceKind, DestKind string
+}
+
+// DeleteResourceEvent - Contains the information needed to delete an existing resource.
+type DeleteResourceEvent struct {
+	UID string `json:"uid,omitempty"`
+}
+
+// SyncEvent - Object sent by the collector with the resources to change.
+type SyncEvent struct {
+	ClearAll bool `json:"clearAll,omitempty"`
+
+	AddResources    []Resource
+	UpdateResources []Resource
+	DeleteResources []DeleteResourceEvent
+
+	AddEdges    []Edge
+	DeleteEdges []Edge
+	RequestId   int
+}
+
 // SyncResponse - Response to a SyncEvent
 type SyncResponse struct {
 	TotalAdded        int
@@ -39,11 +72,17 @@ func SyncResources(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	clusterName := params["id"]
+	klog.V(2).Infof("Processing request from cluster [%s]", clusterName)
 
-	// klog.Infof("request: %+v \n", r)
-	// klog.Infof("body: %+v \n", r.Body)
-	// klog.Info("params:", params)
-	// klog.Infof("Received request from cluster [%s]", clusterName)
+	var syncEvent SyncEvent
+	err := json.NewDecoder(r.Body).Decode(&syncEvent)
+	if err != nil {
+		klog.Error("Error decoding body of syncEvent: ", err)
+		// respond(http.StatusBadRequest)
+		return
+	}
+
+	klog.Infof("Request body(decoded): %+v \n", syncEvent)
 
 	response := &SyncResponse{Version: config.AGGREGATOR_API_VERSION}
 	w.WriteHeader(http.StatusOK)

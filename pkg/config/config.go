@@ -13,7 +13,7 @@ const (
 	DEFAULT_AGGREGATOR_ADDRESS = ":3010"
 	DEFAULT_DB_HOST            = "localhost"
 	DEFAULT_DB_PORT            = 5432
-	DEFAULT_DB_NAME            = "ocm-search"
+	DEFAULT_DB_NAME            = ""
 	DEFAULT_DB_USER            = ""
 	DEFAULT_HTTP_TIMEOUT       = 300000 // 5 min
 

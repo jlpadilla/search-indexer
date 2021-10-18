@@ -42,11 +42,6 @@ func StartAndListen() {
 	}
 
 	klog.Info("Server listening on: ", srv.Addr)
-
-	// FIXME: MUST USE TLS!
-	klog.Fatal(srv.ListenAndServe(),
+	klog.Fatal(srv.ListenAndServeTLS("./sslcert/tls.crt", "./sslcert/tls.key"),
 		" Use ./setup.sh to generate certificates for local development.")
-
-	// log.Fatal(srv.ListenAndServeTLS("./sslcert/tls.crt", "./sslcert/tls.key"),
-	// 	" Use ./setup.sh to generate certificates for local development.")
 }

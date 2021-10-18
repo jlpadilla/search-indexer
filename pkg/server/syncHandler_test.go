@@ -8,29 +8,23 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/jlpadilla/search-indexer/pkg/config"
 )
 
 func Test_syncRequest(t *testing.T) {
-	// TODO: Send request body.
+	// Read mock request body.
 	body, readErr := os.Open("./mocks/simple.json")
 	if readErr != nil {
 		t.Fatal(readErr)
 	}
-	// fmt.Printf("Body: %+v\n", body)
 
-	// bytes, err1 := ioutil.ReadFile("./mocks/simple.json")
-
-	// var data map[string]interface{}
-	// if err := json.Unmarshal(bytes, &data); err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Printf("Body: %+v", data)
-
-	request := httptest.NewRequest(http.MethodPost, "/aggregator/clusters/test-cluster/sync", body)
 	responseRecorder := httptest.NewRecorder()
 
-	SyncResources(responseRecorder, request)
+	request := httptest.NewRequest(http.MethodPost, "/aggregator/clusters/test-cluster/sync", body)
+	router := mux.NewRouter()
+	router.HandleFunc("/aggregator/clusters/{id}/sync", SyncResources)
+	router.ServeHTTP(responseRecorder, request)
 
 	expected := SyncResponse{Version: config.AGGREGATOR_API_VERSION}
 
@@ -44,17 +38,9 @@ func Test_syncRequest(t *testing.T) {
 		t.Error("Unable to decode respoonse body.")
 	}
 
+	// fmt.Printf("Decoded response: %+v", decodedResp)
 	if fmt.Sprintf("%+v", decodedResp) != fmt.Sprintf("%+v", expected) {
 		// if decodedResp != expected {
 		t.Errorf("Incorrect response body.\n expected '%+v'\n received '%+v'", expected, decodedResp)
 	}
 }
-
-// func readMock(file string) (data map[string]interface{}) {
-// 	// bytes, _ := ioutil.ReadFile("./data/sno-0.json")
-// 	bytes, _ := ioutil.ReadFile(file)
-// 	// var data map[string]interface{}
-// 	if err := json.Unmarshal(bytes, &data); err != nil {
-// 		panic(err)
-// 	}
-// }

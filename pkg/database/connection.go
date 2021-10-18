@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
 	"github.com/jlpadilla/search-indexer/pkg/config"
@@ -20,19 +19,20 @@ func init() {
 func initializePool() {
 	cfg := config.New()
 
-	// TODO: Validate configuration
+	// TODO: Validate the configuration.
 
 	database_url := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.DBUser, cfg.DBPass, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	klog.Info("Connecting to PostgreSQL at: ", strings.ReplaceAll(database_url, cfg.DBPass, "*****"))
-	config, connerr := pgxpool.ParseConfig(database_url)
-	if connerr != nil {
-		klog.Info("Error connecting to DB:", connerr)
+	klog.Info("Connecting to PostgreSQL at: ", fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.DBUser, "*****", cfg.DBHost, cfg.DBPort, cfg.DBName))
+
+	config, configErr := pgxpool.ParseConfig(database_url)
+	if configErr != nil {
+		klog.Error("Error parsing database connection configuration.", configErr)
 	}
+
 	// config.MaxConns = maxConnections
 	conn, err := pgxpool.ConnectConfig(context.Background(), config)
-
 	if err != nil {
-		klog.Error("Unable to connect to database: %v\n", err)
+		klog.Error("Unable to connect to database: %+v\n", err)
 	}
 
 	pool = conn
