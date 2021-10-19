@@ -11,7 +11,7 @@ setup: ## Generate ssl certificate for development.
 	cd sslcert; openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -config req.conf -extensions 'v3_req'
 
 run: ## Run the service locally.
-	go run main.go
+	go run main.go -v=9
 
 test: ## Run unit tests.
 	go test ./... -v -coverprofile cover.out
