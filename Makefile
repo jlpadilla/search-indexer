@@ -17,4 +17,4 @@ test: ## Run unit tests.
 	go test ./... -v -coverprofile cover.out
 
 send: ## Sends a simulated request for testing. 
-	curl -k -d "pkg/server/mocks/clusterA.json" -X POST https://localhost:3010/aggregator/clusters/clusterA/sync
+	curl -k -d "@pkg/server/mocks/clusterA.json" -X POST https://localhost:3010/aggregator/clusters/clusterA/sync
