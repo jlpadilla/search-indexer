@@ -7,65 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jlpadilla/search-indexer/pkg/config"
+	db "github.com/jlpadilla/search-indexer/pkg/database"
 	"k8s.io/klog/v2"
 )
-
-// Resource - Describes a resource (node)
-type Resource struct {
-	Kind           string `json:"kind,omitempty"`
-	UID            string `json:"uid,omitempty"`
-	ResourceString string `json:"resourceString,omitempty"`
-	Properties     map[string]interface{}
-}
-
-// Describes a relationship between resources
-type Edge struct {
-	SourceUID, DestUID   string
-	EdgeType             string
-	SourceKind, DestKind string
-}
-
-// DeleteResourceEvent - Contains the information needed to delete an existing resource.
-type DeleteResourceEvent struct {
-	UID string `json:"uid,omitempty"`
-}
-
-// SyncEvent - Object sent by the collector with the resources to change.
-type SyncEvent struct {
-	ClearAll bool `json:"clearAll,omitempty"`
-
-	AddResources    []Resource
-	UpdateResources []Resource
-	DeleteResources []DeleteResourceEvent
-
-	AddEdges    []Edge
-	DeleteEdges []Edge
-	RequestId   int
-}
-
-// SyncResponse - Response to a SyncEvent
-type SyncResponse struct {
-	TotalAdded        int
-	TotalUpdated      int
-	TotalDeleted      int
-	TotalResources    int
-	TotalEdgesAdded   int
-	TotalEdgesDeleted int
-	TotalEdges        int
-	AddErrors         []SyncError
-	UpdateErrors      []SyncError
-	DeleteErrors      []SyncError
-	AddEdgeErrors     []SyncError
-	DeleteEdgeErrors  []SyncError
-	Version           string
-	RequestId         int
-}
-
-// SyncError is used to respond with errors.
-type SyncError struct {
-	ResourceUID string
-	Message     string // Often comes out of a golang error using .Error()
-}
 
 func SyncResources(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
@@ -82,7 +26,9 @@ func SyncResources(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	klog.Infof("Request body(decoded): %+v \n", syncEvent)
+	// TODO: Process the sync event.
+	db.Insert(syncEvent.AddResources, clusterName)
+	// klog.Infof("Request body(decoded): %+v \n", syncEvent)
 
 	response := &SyncResponse{Version: config.AGGREGATOR_API_VERSION}
 	w.WriteHeader(http.StatusOK)
